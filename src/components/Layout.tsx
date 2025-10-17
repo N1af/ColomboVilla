@@ -1,30 +1,65 @@
 import { ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   LayoutDashboard, 
   Building2, 
   ShoppingBag, 
-  Users, 
-  Settings,
-  Menu
+  ShoppingCart,
+  LogOut,
+  Menu,
+  User
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Villa Management", href: "/villas", icon: Building2 },
-  { name: "Dress Shop", href: "/shop", icon: ShoppingBag },
-  { name: "Staff & Roles", href: "/staff", icon: Users },
-  { name: "Settings", href: "/settings", icon: Settings },
-];
+const getNavigationByRole = (role: string) => {
+  if (role === 'admin') {
+    return [
+      { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { name: "Villa Management", href: "/villas", icon: Building2 },
+      { name: "Grocery Shop", href: "/shop/grocery", icon: ShoppingCart },
+      { name: "Dress Shop", href: "/shop/dress", icon: ShoppingBag },
+    ];
+  }
+  
+  if (role === 'villa_staff') {
+    return [
+      { name: "Villa Management", href: "/villas", icon: Building2 },
+    ];
+  }
+  
+  if (role === 'grocery_staff') {
+    return [
+      { name: "Grocery Shop", href: "/shop/grocery", icon: ShoppingCart },
+    ];
+  }
+  
+  if (role === 'dress_staff') {
+    return [
+      { name: "Dress Shop", href: "/shop/dress", icon: ShoppingBag },
+    ];
+  }
+  
+  return [];
+};
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  
+  const navigation = getNavigationByRole(user?.role || '');
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const NavContent = () => (
     <>
@@ -42,14 +77,12 @@ export function Layout({ children }: LayoutProps) {
             <Link
               key={item.name}
               to={item.href}
-              className={`
-                flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-                ${
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }
-              `}
+              className={cn(
+                "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-sidebar-accent text-sidebar-primary"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+              )}
             >
               <item.icon className="mr-3 h-5 w-5" />
               {item.name}
@@ -58,16 +91,24 @@ export function Layout({ children }: LayoutProps) {
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-4">
-        <div className="flex items-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sidebar-accent">
-            <Users className="h-5 w-5 text-sidebar-primary" />
+      <div className="border-t border-sidebar-border p-4 space-y-2">
+        <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-3 py-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary/10">
+            <User className="h-4 w-4 text-sidebar-primary" />
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-sidebar-foreground">Admin User</p>
-            <p className="text-xs text-sidebar-foreground/60">Owner</p>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-sidebar-foreground">{user?.name}</p>
+            <p className="text-xs text-sidebar-foreground/60 capitalize">{user?.role.replace('_', ' ')}</p>
           </div>
         </div>
+        <Button 
+          variant="outline" 
+          className="w-full gap-2" 
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </Button>
       </div>
     </>
   );
