@@ -50,13 +50,13 @@ export default function Dashboard() {
         />
         <MetricCard
           title="Shop Sales Today"
-          value="₹15,240"
+          value="Rs 15,240"
           icon={ShoppingCart}
           trend={{ value: "8%", isPositive: true }}
         />
         <MetricCard
           title="Total Revenue"
-          value="₹1,24,500"
+          value="Rs 1,24,500"
           icon={DollarSign}
           description="This month"
         />
@@ -127,7 +127,7 @@ export default function Dashboard() {
               <TrendingUp className="h-4 w-4" />
               <span className="text-sm">Villa Revenue</span>
             </div>
-            <p className="text-2xl font-bold">₹89,500</p>
+            <p className="text-2xl font-bold">Rs 89,500</p>
             <p className="text-sm text-success">+15% from last month</p>
           </div>
           <div className="space-y-2">
@@ -135,7 +135,7 @@ export default function Dashboard() {
               <ShoppingCart className="h-4 w-4" />
               <span className="text-sm">Shop Revenue</span>
             </div>
-            <p className="text-2xl font-bold">₹35,000</p>
+            <p className="text-2xl font-bold">Rs 35,000</p>
             <p className="text-sm text-success">+8% from last month</p>
           </div>
           <div className="space-y-2">

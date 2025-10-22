@@ -4,71 +4,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Search, Filter, CheckCircle2, AlertCircle, Package, ShoppingCart, Calendar, Home } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Filter,
+  CheckCircle2,
+  AlertCircle,
+  Package,
+  ShoppingCart,
+  Calendar,
+  Home,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function VillaManagement() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [openBooking, setOpenBooking] = useState(false);
+  const [openInventory, setOpenInventory] = useState(false);
+  const [openCleaning, setOpenCleaning] = useState(false);
+  const [openSupply, setOpenSupply] = useState(false);
 
-  // Mock data - Bookings
+  // Mock Data
   const bookings = [
-    {
-      id: 1,
-      guestName: "John Smith",
-      phone: "+91 98765 43210",
-      villa: "Villa A",
-      room: "101",
-      checkIn: "2025-10-15",
-      checkOut: "2025-10-18",
-      totalDays: 3,
-      status: "booked" as const,
-      guests: 2,
-      amount: "₹12,000"
-    },
-    {
-      id: 2,
-      guestName: "Sarah Johnson",
-      phone: "+91 98765 43211",
-      villa: "Villa B",
-      room: "205",
-      checkIn: "2025-10-16",
-      checkOut: "2025-10-20",
-      totalDays: 4,
-      status: "booked" as const,
-      guests: 3,
-      amount: "₹20,000"
-    },
-    {
-      id: 3,
-      guestName: "Available",
-      phone: "-",
-      villa: "Villa A",
-      room: "102",
-      checkIn: "-",
-      checkOut: "-",
-      totalDays: 0,
-      status: "available" as const,
-      guests: 0,
-      amount: "-"
-    },
-    {
-      id: 4,
-      guestName: "Maintenance",
-      phone: "-",
-      villa: "Villa A",
-      room: "103",
-      checkIn: "-",
-      checkOut: "-",
-      totalDays: 0,
-      status: "maintenance" as const,
-      guests: 0,
-      amount: "-"
-    },
+    { id: 1, guestName: "John Smith", phone: "+91 98765 43210", villa: "Villa A", room: "101", checkIn: "2025-10-15", checkOut: "2025-10-18", totalDays: 3, status: "booked" as const, guests: 2, amount: "Rs  12,000" },
+    { id: 2, guestName: "Sarah Johnson", phone: "+91 98765 43211", villa: "Villa B", room: "205", checkIn: "2025-10-16", checkOut: "2025-10-20", totalDays: 4, status: "booked" as const, guests: 3, amount: "Rs  20,000" },
+    { id: 3, guestName: "Available", phone: "-", villa: "Villa A", room: "102", checkIn: "-", checkOut: "-", totalDays: 0, status: "available" as const, guests: 0, amount: "-" },
+    { id: 4, guestName: "Maintenance", phone: "-", villa: "Villa A", room: "103", checkIn: "-", checkOut: "-", totalDays: 0, status: "maintenance" as const, guests: 0, amount: "-" },
   ];
 
-  // Mock data - Room Inventory
   const roomInventory = [
     { id: 1, villa: "Villa A", room: "101", item: "Pillows", total: 4, good: 4, damaged: 0, missing: 0 },
     { id: 2, villa: "Villa A", room: "101", item: "Bedsheets", total: 2, good: 2, damaged: 0, missing: 0 },
@@ -77,7 +47,6 @@ export default function VillaManagement() {
     { id: 5, villa: "Villa B", room: "205", item: "Bedsheets", total: 2, good: 1, damaged: 0, missing: 1 },
   ];
 
-  // Mock data - Cleaning Checklist
   const cleaningChecklist = [
     { id: 1, villa: "Villa A", room: "101", date: "2025-10-16", status: "cleaned" as const, cleaner: "Ravi Kumar", notes: "All good" },
     { id: 2, villa: "Villa A", room: "102", date: "2025-10-16", status: "pending" as const, cleaner: "-", notes: "-" },
@@ -85,7 +54,6 @@ export default function VillaManagement() {
     { id: 4, villa: "Villa B", room: "205", date: "2025-10-16", status: "cleaned" as const, cleaner: "Priya Sharma", notes: "All good" },
   ];
 
-  // Mock data - Supplies & Groceries
   const supplies = [
     { id: 1, villa: "Villa A", item: "Tea Powder", quantity: "500g", lastUpdated: "2025-10-15", status: "sufficient" as const },
     { id: 2, villa: "Villa A", item: "Sugar", quantity: "2kg", lastUpdated: "2025-10-14", status: "sufficient" as const },
@@ -104,58 +72,31 @@ export default function VillaManagement() {
             Complete villa operations - bookings, inventory, cleaning & supplies
           </p>
         </div>
-        <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="gap-2">Menu</Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuItem onClick={() => setOpenBooking(true)}>
+              <Plus className="h-4 w-4 mr-2" />
               New Booking
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add New Booking</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="guestName">Guest Name</Label>
-                <Input id="guestName" placeholder="Enter guest name" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" placeholder="+91 98765 43210" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="villa">Villa</Label>
-                  <Input id="villa" placeholder="Villa A" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="room">Room</Label>
-                  <Input id="room" placeholder="101" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="checkIn">Check-in</Label>
-                  <Input id="checkIn" type="date" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="checkOut">Check-out</Label>
-                  <Input id="checkOut" type="date" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="guests">Number of Guests</Label>
-                <Input id="guests" type="number" placeholder="2" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="amount">Total Amount</Label>
-                <Input id="amount" placeholder="₹12,000" />
-              </div>
-              <Button className="w-full">Confirm Booking</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenInventory(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Inventory
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenCleaning(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Cleaning Details
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenSupply(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Supplies
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Quick Stats */}
@@ -206,7 +147,7 @@ export default function VillaManagement() {
         </Card>
       </div>
 
-      {/* Tabs for different sections */}
+      {/* Tabs */}
       <Tabs defaultValue="bookings" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
@@ -283,13 +224,13 @@ export default function VillaManagement() {
           </Card>
         </TabsContent>
 
-        {/* Room Inventory Tab */}
+        {/* Inventory Tab */}
         <TabsContent value="inventory" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               Track pillows, bedsheets, towels and other room items
             </p>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => setOpenInventory(true)}>
               <Package className="h-4 w-4" />
               Update Inventory
             </Button>
@@ -333,13 +274,13 @@ export default function VillaManagement() {
           </Card>
         </TabsContent>
 
-        {/* Cleaning Checklist Tab */}
+        {/* Cleaning Tab */}
         <TabsContent value="cleaning" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               Daily room cleaning status and maintenance tracking
             </p>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => setOpenCleaning(true)}>
               <CheckCircle2 className="h-4 w-4" />
               Mark as Cleaned
             </Button>
@@ -385,13 +326,13 @@ export default function VillaManagement() {
           </Card>
         </TabsContent>
 
-        {/* Supplies & Groceries Tab */}
+        {/* Supplies Tab */}
         <TabsContent value="supplies" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               Track daily grocery usage - tea, sugar, milk, and other supplies
             </p>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => setOpenSupply(true)}>
               <ShoppingCart className="h-4 w-4" />
               Add Supply Entry
             </Button>
@@ -435,6 +376,161 @@ export default function VillaManagement() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* --- Dialogs --- */}
+      {/* Booking Dialog */}
+      <Dialog open={openBooking} onOpenChange={setOpenBooking}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Booking</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="guestName">Guest Name</Label>
+              <Input id="guestName" placeholder="Enter guest name" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input id="phone" placeholder="+91 98765 43210" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="villa">Villa</Label>
+                <Input id="villa" placeholder="Villa A" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="room">Room</Label>
+                <Input id="room" placeholder="101" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="checkIn">Check-in</Label>
+                <Input id="checkIn" type="date" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkOut">Check-out</Label>
+                <Input id="checkOut" type="date" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="guests">Number of Guests</Label>
+              <Input id="guests" type="number" placeholder="2" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Total Amount</Label>
+              <Input id="amount" placeholder="Rs  12,000" />
+            </div>
+            <Button className="w-full">Confirm Booking</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inventory Dialog */}
+      <Dialog open={openInventory} onOpenChange={setOpenInventory}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Inventory Item</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="villaInventory">Villa</Label>
+              <Input id="villaInventory" placeholder="Villa A" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="roomInventory">Room</Label>
+              <Input id="roomInventory" placeholder="101" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="itemName">Item</Label>
+              <Input id="itemName" placeholder="Pillows" />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="total">Total</Label>
+                <Input id="total" type="number" placeholder="4" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="good">Good</Label>
+                <Input id="good" type="number" placeholder="4" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="damaged">Damaged</Label>
+                <Input id="damaged" type="number" placeholder="0" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="missing">Missing</Label>
+              <Input id="missing" type="number" placeholder="0" />
+            </div>
+            <Button className="w-full">Add Inventory</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cleaning Dialog */}
+      <Dialog open={openCleaning} onOpenChange={setOpenCleaning}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Cleaning Record</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="villaCleaning">Villa</Label>
+              <Input id="villaCleaning" placeholder="Villa A" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="roomCleaning">Room</Label>
+              <Input id="roomCleaning" placeholder="101" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cleaner">Cleaner Name</Label>
+              <Input id="cleaner" placeholder="Ravi Kumar" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dateCleaning">Date</Label>
+              <Input id="dateCleaning" type="date" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statusCleaning">Status</Label>
+              <Input id="statusCleaning" placeholder="cleaned / pending / maintenance" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notesCleaning">Notes</Label>
+              <Input id="notesCleaning" placeholder="Optional notes..." />
+            </div>
+            <Button className="w-full">Add Cleaning Record</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Supplies Dialog */}
+      <Dialog open={openSupply} onOpenChange={setOpenSupply}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Supply</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="villaSupply">Villa</Label>
+              <Input id="villaSupply" placeholder="Villa A" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="itemSupply">Item Name</Label>
+              <Input id="itemSupply" placeholder="Tea Powder" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="quantitySupply">Quantity</Label>
+              <Input id="quantitySupply" placeholder="500g" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statusSupply">Status</Label>
+              <Input id="statusSupply" placeholder="sufficient / low" />
+            </div>
+            <Button className="w-full">Add Supply</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

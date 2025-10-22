@@ -17,15 +17,33 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const success = login(username, password);
-    
-    if (success) {
+
+    // 🔑 login now returns the user object
+    const loggedUser = login(username, password);
+
+    if (loggedUser) {
       toast({
         title: "Login successful",
-        description: "Welcome back!",
+        description: `Welcome back, ${loggedUser.name}!`,
       });
-      navigate('/admin');
+
+      // 🔄 Navigate based on role
+      switch (loggedUser.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'villa_staff':
+          navigate('/villas');
+          break;
+        case 'grocery_staff':
+          navigate('/shop/grocery');
+          break;
+        case 'dress_staff':
+          navigate('/shop/dress');
+          break;
+        default:
+          navigate('/login');
+      }
     } else {
       toast({
         title: "Login failed",
@@ -47,6 +65,7 @@ const Login = () => {
           <CardTitle className="text-2xl font-bold">Business Management System</CardTitle>
           <CardDescription>Enter your credentials to access the dashboard</CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -59,6 +78,7 @@ const Login = () => {
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -70,11 +90,13 @@ const Login = () => {
                 required
               />
             </div>
+
             <Button type="submit" className="w-full">
               Sign In
             </Button>
           </form>
 
+          {/* Demo Credentials */}
           <div className="mt-6 pt-6 border-t">
             <p className="text-sm text-muted-foreground text-center mb-3">Demo Credentials:</p>
             <div className="space-y-2 text-xs text-muted-foreground">

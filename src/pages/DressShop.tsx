@@ -6,13 +6,14 @@ import { Plus, Search, Package, TrendingUp, DollarSign } from "lucide-react";
 import { useState } from "react";
 
 export default function DressShop() {
+  console.debug('DressShop render');
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock data
   const recentSales = [
-    { id: 1, product: "Cotton Saree", quantity: 2, amount: "₹3,500", time: "2 hours ago" },
-    { id: 2, product: "Silk Dress", quantity: 1, amount: "₹5,200", time: "3 hours ago" },
-    { id: 3, product: "Bed Linen Set", quantity: 3, amount: "₹4,800", time: "5 hours ago" },
+    { id: 1, product: "Cotton Saree", quantity: 2, amount: "Rs 3,500", time: "2 hours ago" },
+    { id: 2, product: "Silk Dress", quantity: 1, amount: "Rs 5,200", time: "3 hours ago" },
+    { id: 3, product: "Bed Linen Set", quantity: 3, amount: "Rs 4,800", time: "5 hours ago" },
   ];
 
   const lowStock = [
@@ -39,7 +40,7 @@ export default function DressShop() {
       <div className="grid gap-6 sm:grid-cols-3">
         <MetricCard
           title="Today's Sales"
-          value="₹15,240"
+          value="Rs 15,240"
           icon={DollarSign}
           trend={{ value: "12%", isPositive: true }}
         />
@@ -51,7 +52,7 @@ export default function DressShop() {
         />
         <MetricCard
           title="Month Revenue"
-          value="₹3,24,500"
+          value="Rs 3,24,500"
           icon={TrendingUp}
           trend={{ value: "8%", isPositive: true }}
         />

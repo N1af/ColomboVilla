@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const AdminDashboard = () => {
+  console.debug('AdminDashboard render');
   return (
     <div className="space-y-6">
       <div>
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Revenue Today"
-          value="₹45,250"
+          value="Rs 45,250"
           icon={TrendingUp}
           trend={{ value: "12%", isPositive: true }}
         />
@@ -28,13 +29,13 @@ const AdminDashboard = () => {
         />
         <MetricCard
           title="Grocery Sales"
-          value="₹18,500"
+          value="Rs 18,500"
           icon={ShoppingCart}
           trend={{ value: "8%", isPositive: true }}
         />
         <MetricCard
           title="Dress Shop Sales"
-          value="₹12,750"
+          value="Rs 12,750"
           icon={ShoppingBag}
           trend={{ value: "15%", isPositive: true }}
         />
@@ -83,7 +84,7 @@ const AdminDashboard = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Today's Sales</span>
-                <span className="font-medium">₹18,500</span>
+                <span className="font-medium">Rs 18,500</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Items Sold</span>
@@ -114,7 +115,7 @@ const AdminDashboard = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Today's Sales</span>
-                <span className="font-medium">₹12,750</span>
+                <span className="font-medium">Rs 12,750</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Items Sold</span>
@@ -146,9 +147,9 @@ const AdminDashboard = () => {
             {[
               { icon: Building2, text: "New booking: Room 101 - Check-in today", time: "10 mins ago", color: "text-blue-500" },
               { icon: ShoppingCart, text: "Grocery: Low stock alert - Rice (5kg)", time: "25 mins ago", color: "text-orange-500" },
-              { icon: ShoppingBag, text: "Dress Shop: Sale completed - ₹2,400", time: "1 hour ago", color: "text-green-500" },
+              { icon: ShoppingBag, text: "Dress Shop: Sale completed - Rs 2,400", time: "1 hour ago", color: "text-green-500" },
               { icon: Building2, text: "Villa: Room 203 cleaned and ready", time: "2 hours ago", color: "text-blue-500" },
-              { icon: ShoppingCart, text: "Grocery: Daily sales reached ₹15,000", time: "3 hours ago", color: "text-green-500" },
+              { icon: ShoppingCart, text: "Grocery: Daily sales reached Rs 15,000", time: "3 hours ago", color: "text-green-500" },
             ].map((activity, index) => (
               <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                 <activity.icon className={`h-5 w-5 ${activity.color}`} />

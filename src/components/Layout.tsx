@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -13,10 +12,6 @@ import {
   Menu,
   User
 } from "lucide-react";
-
-interface LayoutProps {
-  children: ReactNode;
-}
 
 const getNavigationByRole = (role: string) => {
   if (role === 'admin') {
@@ -49,12 +44,15 @@ const getNavigationByRole = (role: string) => {
   return [];
 };
 
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   
   const navigation = getNavigationByRole(user?.role || '');
+  // Debugging: log navigation and pathname to help trace incorrect rendering
+  // Remove or comment out in production
+  console.debug("Layout render - pathname:", location.pathname, "role:", user?.role, "navigation:", navigation);
   
   const handleLogout = () => {
     logout();
@@ -139,7 +137,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto p-6 lg:p-8">
-          {children}
+          <Outlet /> {/* 👈 This replaces {children} */}
         </div>
       </main>
     </div>

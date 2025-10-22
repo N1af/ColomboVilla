@@ -14,41 +14,91 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+/* 🔒 Protect routes */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 }
 
-const AppRoutes = () => {
+/* 📦 App Routes */
+function AppRoutes() {
   const { isAuthenticated, user } = useAuth();
+
+  // 🧠 Role-based redirect after login
+  const getDashboardPath = () => {
+    switch (user?.role) {
+      case "admin":
+        return "/admin";
+      case "villa_staff":
+        return "/villas";
+      case "dress_staff":
+        return "/shop/dress";
+      case "grocery_staff":
+        return "/shop/grocery";
+      default:
+        return "/login";
+    }
+  };
 
   return (
     <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/admin" replace /> : <Login />} />
-      <Route path="/" element={<Navigate to={isAuthenticated ? "/admin" : "/login"} replace />} />
-      
-      <Route path="/admin" element={<ProtectedRoute><Layout><AdminDashboard /></Layout></ProtectedRoute>} />
-      <Route path="/villas" element={<ProtectedRoute><Layout><VillaManagement /></Layout></ProtectedRoute>} />
-      <Route path="/shop/dress" element={<ProtectedRoute><Layout><DressShop /></Layout></ProtectedRoute>} />
-      <Route path="/shop/grocery" element={<ProtectedRoute><Layout><GroceryShop /></Layout></ProtectedRoute>} />
-      
+      {/* Public: Login Page */}
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? (
+            <Navigate to={getDashboardPath()} replace />
+          ) : (
+            <Login />
+          )
+        }
+      />
+
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Redirect from / -> user-specific dashboard */}
+        <Route
+          index
+          element={<Navigate to={isAuthenticated ? getDashboardPath() : "/login"} replace />}
+        />
+
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="villas" element={<VillaManagement />} />
+        <Route path="shop/dress" element={<DressShop />} />
+        <Route path="shop/grocery" element={<GroceryShop />} />
+      </Route>
+
+      {/* 404 Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-};
+}
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
-
-export default App;
+/* 🌍 App Wrapper */
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
