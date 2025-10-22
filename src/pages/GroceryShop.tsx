@@ -78,6 +78,7 @@ const GroceryShop = () => {
   const [cart, setCart] = useState<
     { product: string; qty: number; amount: number }[]
   >([]);
+
   const [barcode, setBarcode] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [showBill, setShowBill] = useState(false);
@@ -86,13 +87,10 @@ const GroceryShop = () => {
   const [newProductQuantity, setNewProductQuantity] = useState("");
   const [newProductCategory, setNewProductCategory] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
-
   const [showBillModal, setShowBillModal] = useState(false);
 
-  // Calculate total
   const totalAmount = cart.reduce((acc, item) => acc + item.amount, 0);
 
-  // Filter products
   const filteredProducts = allProducts.filter(
     (p) =>
       (!selectedCategory ||
@@ -112,31 +110,23 @@ const GroceryShop = () => {
             : p
         );
       } else {
-        return [
-          ...prev,
-          { product: product.name, qty: 1, amount: product.price },
-        ];
+        return [...prev, { product: product.name, qty: 1, amount: product.price }];
       }
     });
   };
 
+  // Show Add Product Form
   const handleAddClick = () => {
-    if (barcode) {
-      const prod = allProducts.find((p) => p.barcode === barcode);
-      if (prod) {
-        setNewProductName(prod.name);
-      } else {
-        setNewProductName("");
-      }
-    } else {
-      setNewProductName("");
-    }
     setShowAddForm(true);
   };
 
+  // Save new product to list
   const handleSaveProduct = () => {
     const categoryToUse = newCategoryName || newProductCategory;
-    if (!categoryToUse) return;
+    if (!newProductName || !newProductPrice || !categoryToUse) {
+      alert("Please fill all required fields.");
+      return;
+    }
 
     if (newCategoryName && !categories.includes(newCategoryName)) {
       setCategories([...categories, newCategoryName]);
@@ -151,10 +141,11 @@ const GroceryShop = () => {
         category: categoryToUse,
         price: Number(newProductPrice),
         quantity: newProductQuantity || "1 unit",
-        barcode: barcode || "",
+        barcode: barcode || `B-${newId}`,
       },
     ]);
 
+    // reset form
     setBarcode("");
     setNewProductName("");
     setNewProductPrice("");
@@ -183,18 +174,15 @@ const GroceryShop = () => {
     setCart([]);
   };
 
-  // If Bill View Active
+  // --- BILL VIEW ---
   if (showBill) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
         <div className="bg-white w-full max-w-sm shadow-lg rounded-lg p-6 text-center font-mono border border-gray-300">
-          {/* Header */}
           <h1 className="text-2xl font-extrabold tracking-wide">🏪 GROCERY POS</h1>
           <p className="text-sm text-gray-500 mt-1">No. 123, Main Street, Colombo</p>
           <p className="text-sm text-gray-500">Tel: +94 77 123 4567</p>
           <hr className="my-3 border-gray-300" />
-
-          {/* Bill Info */}
           <div className="text-xs text-left space-y-1">
             <div className="flex justify-between">
               <span>Invoice No:</span>
@@ -213,10 +201,7 @@ const GroceryShop = () => {
               <span>Naflan</span>
             </div>
           </div>
-
           <hr className="my-3 border-gray-300" />
-
-          {/* Item List */}
           <div className="text-left text-sm">
             {cart.map((item, i) => (
               <div key={i} className="flex justify-between mb-1">
@@ -227,10 +212,7 @@ const GroceryShop = () => {
               </div>
             ))}
           </div>
-
           <hr className="my-3 border-gray-300" />
-
-          {/* Totals */}
           <div className="text-sm space-y-1">
             <div className="flex justify-between">
               <span>Subtotal:</span>
@@ -250,73 +232,44 @@ const GroceryShop = () => {
               <span>Rs {(totalAmount * 0.97).toFixed(2)}</span>
             </div>
           </div>
-
           <hr className="my-3 border-gray-300" />
-
-          {/* Footer Info */}
           <div className="text-xs text-gray-500 mt-2">
             <p>Payment Method: <span className="font-semibold text-gray-800">Cash</span></p>
             <p>Thank You for Shopping with Us!</p>
             <p>Visit Again 🙏</p>
           </div>
-
-          {/* Barcode / QR section */}
           <div className="mt-3 flex justify-center">
             <div className="w-32 h-1 bg-gray-700 rounded"></div>
           </div>
-
-          {/* Back to POS Button */}
           <div className="mt-5 flex justify-center">
             <Button onClick={handleBackToShop} className="gap-2">
               <Printer className="h-4 w-4" /> Back to POS
             </Button>
           </div>
         </div>
-
       </div>
     );
   }
 
-  // Main POS UI
+  // --- MAIN POS INTERFACE ---
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold mb-2">Grocery Shop POS</h1>
-        <p className="text-muted-foreground">
-          Point of Sale & Inventory Management
-        </p>
+        <p className="text-muted-foreground">Point of Sale & Inventory Management</p>
       </div>
 
-      {/* Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Today's Sales"
-          value="Rs 18,500"
-          icon={DollarSign}
-          trend={{ value: "8%", isPositive: true }}
-        />
-        <MetricCard
-          title="Items Sold"
-          value="142"
-          icon={Package}
-          trend={{ value: "12%", isPositive: true }}
-        />
+        <MetricCard title="Today's Sales" value="Rs 18,500" icon={DollarSign} trend={{ value: "8%", isPositive: true }} />
+        <MetricCard title="Items Sold" value="142" icon={Package} trend={{ value: "12%", isPositive: true }} />
         <MetricCard title="Transactions" value="38" icon={ShoppingCart} />
-        <MetricCard
-          title="Month Revenue"
-          value="Rs 4,25,800"
-          icon={TrendingUp}
-          trend={{ value: "15%", isPositive: true }}
-        />
+        <MetricCard title="Month Revenue" value="Rs 4,25,800" icon={TrendingUp} trend={{ value: "15%", isPositive: true }} />
       </div>
 
-      {/* Categories */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Tag className="h-5 w-5 text-primary" />
-            Categories
+            <Tag className="h-5 w-5 text-primary" /> Categories
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -333,11 +286,7 @@ const GroceryShop = () => {
                 key={cat}
                 size="sm"
                 variant={selectedCategory === cat ? "default" : "outline"}
-                onClick={() =>
-                  setSelectedCategory(
-                    selectedCategory === cat ? null : cat
-                  )
-                }
+                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
               >
                 {cat}
               </Button>
@@ -346,12 +295,11 @@ const GroceryShop = () => {
         </CardContent>
       </Card>
 
-      {/* Search + Barcode */}
+      {/* Search & Barcode Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5 text-primary" />
-            Product Search / Barcode
+            <Search className="h-5 w-5 text-primary" /> Product Search / Barcode
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -367,7 +315,7 @@ const GroceryShop = () => {
             </div>
             <div className="flex gap-2">
               <Input
-                placeholder="Scan barcode"
+                placeholder="Enter / Scan Barcode"
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
               />
@@ -385,9 +333,7 @@ const GroceryShop = () => {
                 onClick={() => addToCart(p)}
               >
                 <p className="font-medium">{p.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  Rs {p.price} ({p.quantity})
-                </p>
+                <p className="text-sm text-muted-foreground">Rs {p.price} ({p.quantity})</p>
               </Card>
             ))}
           </div>
@@ -399,12 +345,9 @@ const GroceryShop = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              Cart
+              <ShoppingCart className="h-5 w-5 text-primary" /> Cart
             </span>
-            <span className="font-semibold text-lg text-primary">
-              Total: Rs {totalAmount}
-            </span>
+            <span className="font-semibold text-lg text-primary">Total: Rs {totalAmount}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -413,15 +356,10 @@ const GroceryShop = () => {
           ) : (
             <div className="space-y-2">
               {cart.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center p-2 rounded-lg bg-muted/10"
-                >
+                <div key={idx} className="flex justify-between items-center p-2 rounded-lg bg-muted/10">
                   <div className="flex-1">
                     <p className="font-medium">{item.product}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Qty: {item.qty}
-                    </p>
+                    <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
                   </div>
                   <div className="flex gap-2 items-center">
                     <p className="font-semibold">Rs {item.amount}</p>
@@ -443,6 +381,63 @@ const GroceryShop = () => {
         </CardContent>
       </Card>
 
+      {/* Add Product Form Modal */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md space-y-4 shadow-lg">
+            <h2 className="text-xl font-bold">Add New Product</h2>
+
+            <Input
+              placeholder="Product Name"
+              value={newProductName}
+              onChange={(e) => setNewProductName(e.target.value)}
+            />
+            <Input
+              placeholder="Price (Rs)"
+              type="number"
+              value={newProductPrice}
+              onChange={(e) => setNewProductPrice(e.target.value)}
+            />
+            <Input
+              placeholder="Quantity (e.g. 1kg, 500ml)"
+              value={newProductQuantity}
+              onChange={(e) => setNewProductQuantity(e.target.value)}
+            />
+            <Input
+              placeholder="Barcode Number"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+            />
+
+            <Select
+              onValueChange={(val) => setNewProductCategory(val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Input
+              placeholder="Or add new category"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+            />
+
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveProduct}>Save Product</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bill Modal */}
       {showBillModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -451,12 +446,7 @@ const GroceryShop = () => {
             <p>Total Items: {cart.length}</p>
             <p>Total Amount: Rs {totalAmount}</p>
             <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowBillModal(false)}
-              >
-                Cancel
-              </Button>
+              <Button variant="outline" onClick={() => setShowBillModal(false)}>Cancel</Button>
               <Button onClick={handleConfirmPrint}>Print Bill</Button>
             </div>
           </div>
